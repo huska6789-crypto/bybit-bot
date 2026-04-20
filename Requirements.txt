@@ -1,0 +1,4 @@
+pybit
+flask
+requests
+python-dotenv
