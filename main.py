@@ -6,7 +6,7 @@ from threading import Thread, Lock
 from flask import Flask
 from datetime import date
 
-# ========= FURAHA API (SI TOOS AH LOO QORAY) =========
+# ========= FURAHA API (SI TOOS AH) =========
 BYBIT_API_KEY = "lawFbe10bXqkYMX3ok"
 BYBIT_API_SECRET = "dxSKZRtWftYFCBYUFhfyuUGxYN9ZavHKg7789"
 
@@ -43,31 +43,44 @@ pause_until = 0
 last_known_balance = 0.0
 lock = Lock()
 
-# ========= HAWL FARSAMO =========
+# ========= HAWL FARSAMO (DHEELITIRKA SAXA AH) =========
 def get_wallet_balance():
     global last_known_balance
     try:
         resp = session.get_wallet_balance(accountType="UNIFIED")
         if resp and resp.get('retCode') == 0:
-            for account in resp['result']['list']:
-                total_eq = account.get('totalEquity')
-                if total_eq is not None:
-                    bal = float(total_eq)
-                    if bal > 0:
-                        last_known_balance = bal
-                        return bal
-                for coin in account.get('coin', []):
-                    if coin['coin'] == 'USDT':
-                        wb = coin.get('walletBalance')
-                        if wb is not None:
-                            bal = float(wb)
+            result = resp['result']
+            # Bybit waxay ku soo celisaa qaabab kala duwan
+            if 'list' in result:
+                for account in result['list']:
+                    # Ka raadi USDT qaybta 'coin'
+                    for coin in account.get('coin', []):
+                        if coin.get('coin') == 'USDT':
+                            bal = float(coin.get('walletBalance', 0))
                             if bal > 0:
                                 last_known_balance = bal
                                 return bal
+                    # Haddii aan la helin, isticmaal totalEquity
+                    total_eq = account.get('totalEquity')
+                    if total_eq is not None:
+                        bal = float(total_eq)
+                        if bal > 0:
+                            last_known_balance = bal
+                            return bal
+            elif 'result' in result:  # qaab kale
+                for item in result['result']:
+                    if item.get('coin') == 'USDT':
+                        bal = float(item.get('walletBalance', 0))
+                        if bal > 0:
+                            last_known_balance = bal
+                            return bal
+        else:
+            print(f"Balance API error: {resp}")
     except Exception as e:
-        print(f"Balance error: {e}")
-    return last_known_balance
+        print(f"Balance exception: {e}")
+    return last_known_balance if last_known_balance > 0 else 0.0
 
+# ========= HAWL KALE (SI KOOBAN) =========
 def get_btc_change():
     try:
         ticker = session.get_tickers(category="spot", symbol="BTCUSDT")
