@@ -6,13 +6,9 @@ from threading import Thread, Lock
 from flask import Flask
 from datetime import date
 
-# ========= FURAHA API (waxaa laga qaadaa Environment Variables Render) =========
-BYBIT_API_KEY = os.getenv("BYBIT_API_KEY", "")
-BYBIT_API_SECRET = os.getenv("BYBIT_API_SECRET", "")
-
-# Haddii aad rabto inaad si toos ah u qorto (kaliya tijaabo), kana saar # hoose:
-# BYBIT_API_KEY = "qh1ujOchsuqW8xHo9x"
-# BYBIT_API_SECRET = "OWUpnNVtGUoHPjYoKBcsWRVv6FulhE0HUkXH"
+# ========= FURAHA API (SI TOOS AH LOO QORAY) =========
+BYBIT_API_KEY = "lawFbe10bXqkYMX3ok"
+BYBIT_API_SECRET = "dxSKZRtWftYFCBYUFhfyuUGxYN9ZavHKg7789"
 
 session = HTTP(
     testnet=False,
